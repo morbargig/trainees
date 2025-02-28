@@ -41,6 +41,6 @@ Thumbs.db
 
 .angular
 .npmrc
-package-lock.json
+# package-lock.json
 
 .nx/
