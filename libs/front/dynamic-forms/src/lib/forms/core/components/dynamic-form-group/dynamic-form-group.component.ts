@@ -53,8 +53,7 @@ export class DynamicFormGroupComponent<T = any> implements OnInit {
   @Input() public cancelText: string;
 
   @Output() public formOnCancel: EventEmitter<any> = new EventEmitter<any>();
-  @Output() public formOnSubmit: EventEmitter<boolean> =
-    new EventEmitter<boolean>();
+  @Output() public formOnSubmit: EventEmitter<T> = new EventEmitter<T>();
   @Output() public formChange: EventEmitter<FormGroup> =
     new EventEmitter<FormGroup>();
 

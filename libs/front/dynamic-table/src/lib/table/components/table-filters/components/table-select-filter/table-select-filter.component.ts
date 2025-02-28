@@ -3,20 +3,20 @@ import {
   Component,
   forwardRef,
   Input,
-  AfterViewInit,
   ChangeDetectorRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import {
-  ITableFilterOption,
-  ITableFilter,
-} from '../table-filters/table-filters.component';
+import { ITableFilterOption, ITableFilter } from '../table-filters/helpers';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'softbar-app-table-select-filter',
   templateUrl: './table-select-filter.component.html',
   styleUrls: ['./table-select-filter.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [CommonModule, MatMenuModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -26,7 +26,7 @@ import {
   ],
 })
 export class TableSelectFilterComponent<T = any>
-  implements AfterViewInit, ControlValueAccessor
+  implements ControlValueAccessor
 {
   constructor(private cd: ChangeDetectorRef) {}
   public isMenuOpen: boolean;
@@ -36,9 +36,9 @@ export class TableSelectFilterComponent<T = any>
   private onTouched: (...args: any[]) => any = () => null;
   private onChanged: (...args: any[]) => any = () => null;
 
-  public get options() {
-    return this.filterCtl?.options;
-  }
+  // public get options() {
+  //   return this.filterCtl?.options;
+  // }
 
   @Input() public set filterCtl(v: ITableFilter<T>) {
     this._filterCtl = v;
@@ -47,9 +47,9 @@ export class TableSelectFilterComponent<T = any>
     return this._filterCtl;
   }
 
-  ngAfterViewInit() {
-    this.handleChange(this.filterCtl.initialValue());
-  }
+  // ngAfterViewInit() {
+  //   this.handleChange(this.filterCtl.initialValue());
+  // }
 
   public toggleOpen() {
     this.isMenuOpen = !this.isMenuOpen;

@@ -57,20 +57,6 @@ export class TestingTableComponent {
           { name: 'Eve Carter', phoneNumber: 2345678901 },
         ],
       },
-      friends: [
-        {
-          name: 'Bob Smith',
-          phoneNumber: 1234567890,
-          bestFriend: { name: 'Bob Smith', phoneNumber: 1234567890 },
-          friends: [
-            {
-              name: 'Bob Smith',
-              phoneNumber: 1234567890,
-              friends: [{ name: 'Bob Smith', phoneNumber: 1234567890 }],
-            },
-          ],
-        },
-      ],
     },
     {
       name: 'Bob Smith',
@@ -317,22 +303,8 @@ export class TestingTableComponent {
       label: 'Is Happy',
       type: 'Boolean',
     },
-    {
-      field: 'job',
-      label: 'More Data',
-      type: 'Extends',
-    },
   ];
   columns: ITableColumn<entityType>[] = this.originalColumn as any;
-  eColumns: ITableColumn<entityType['job']>[] = [
-    {
-      field: 'title',
-      type: 'Default',
-    },
-  ];
-  getExtendsData: TableComponent<entityType, entityType['job']>['getExtendsData'] = (
-    i?
-  ) => i.job;
 
   formOnSubmitEditColumns(event: { __: entityColumnsType[] }) {
     this.columns = event.__ as any;

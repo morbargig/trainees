@@ -1,0 +1,36 @@
+.app-container {
+  height: 100vh;
+  display: flex;
+}
+
+/* Hide sidebar on mobile, open in overlay mode */
+.sidenav {
+  width: 250px;
+}
+
+@media (max-width: 768px) {
+  .sidenav {
+    width: 100%;
+  }
+  .content {
+    padding: 10px;
+  }
+  .table-card {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* Ensure table is scrollable on mobile */
+table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+mat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

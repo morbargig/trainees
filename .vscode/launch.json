@@ -4,47 +4,32 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-
-
     {
-      "name": "Api",
-      "type": "node",
+      "name": "Debug Nx Serve (main-app)",
+      "type": "chrome",
       "request": "launch",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "run", "api:serve", "--inspect"],
-      "preLaunchTask": "tsc: watch - apps/api/tsconfig.json",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "NODE_PORT": "8080",
-        "IS_DEBUG_MODE": "true"
-      },
-      "sourceMaps": true,
-      "console": "internalConsole",
-      "outputCapture": "std",
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**" // Disable the "could not read source map" error for node_modules
-      ]
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}",
+      "runtimeArgs": ["--remote-debugging-port=9222"],
+      "preLaunchTask": "Nx: Serve main-app"
     },
     {
-      "name": "Api Mock",
+      "name": "Debug Nx Build (main-app)",
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "run", "api:serve:mock", "--inspect"],
-      "preLaunchTask": "tsc: watch - apps/api/tsconfig.json",
-      "internalConsoleOptions": "neverOpen",
-      "env": {
-        "NODE_PORT": "8080",
-        "IS_DEBUG_MODE": "true"
-      },
-      "sourceMaps": true,
-      "console": "internalConsole",
-      "outputCapture": "std",
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**" // Disable the "could not read source map" error for node_modules
-      ]
+      "runtimeArgs": ["nx", "build", "main-app", "--configuration=production"],
+      "console": "integratedTerminal",
+      "restart": true
+    },
+    {
+      "name": "Debug Nx Start (main-app)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/dist/apps/main-app",
+      "runtimeArgs": ["--remote-debugging-port=9222"],
+      "preLaunchTask": "Nx: Build & Start main-app"
     },
     {
       "type": "node",
@@ -59,6 +44,6 @@
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}",
       "userDataDir": "${workspaceFolder}/.vscode/chrome"
-    },
+    }
   ]
 }

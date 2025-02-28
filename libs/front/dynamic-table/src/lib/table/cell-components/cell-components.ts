@@ -115,6 +115,7 @@ interface ITableColumnObj<
   K extends keyof { [key in keyof T]: any } = keyof { [key in keyof T]: any },
   E extends keyof typeof TableColumnType = keyof typeof TableColumnType /**  | never */
 > {
+  id?: string;
   type: E;
   data?: E extends 'DynamicLazy' ? null : DModel;
   loadCustomCellComponent?: E extends 'DynamicLazy'

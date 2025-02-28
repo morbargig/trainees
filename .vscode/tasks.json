@@ -2,12 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "typescript",
-      "tsconfig": "apps/api/tsconfig.json",
-      "option": "watch",
-      "problemMatcher": ["$tsc-watch"],
-      "group": "build",
-      "label": "tsc: watch - apps/api/tsconfig.json"
+      "label": "Nx: Serve main-app",
+      "type": "shell",
+      "command": "npx nx serve main-app",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "Nx: Build & Start main-app",
+      "type": "shell",
+      "command": "npx nx build main-app --configuration=production && npx http-server ./dist/apps/main-app -p 4200",
+      "problemMatcher": [],
+      "isBackground": true
     }
   ]
 }

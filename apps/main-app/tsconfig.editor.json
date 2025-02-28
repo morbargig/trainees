@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "src/app/components/student-form"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }

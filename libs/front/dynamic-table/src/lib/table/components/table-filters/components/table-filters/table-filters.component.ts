@@ -11,14 +11,14 @@ import {
   FormBuilder,
   FormControl,
   AbstractControl,
+  ReactiveFormsModule,
 } from '@angular/forms';
-import {
-  LazyLoadEvent,
-  MatchMode,
-  FilterInsideObject,
-} from '../../lazy-load-event.type';
+import { LazyLoadEvent, FilterInsideObject } from '../../lazy-load-event.type';
 import { debounceTime } from 'rxjs/operators';
 import { BaseComponent } from '../../../../core/components/base-component.directive';
+import { ITableFilter } from './helpers';
+import { CommonModule } from '@angular/common';
+import { TableSelectInputComponent } from '../table-select-input/table-select-input.component';
 
 class NewFormGroup<
   T,
@@ -29,34 +29,20 @@ class NewFormGroup<
   };
 }
 
-export type ITableFilterOption<T = any, K extends keyof T = keyof T> = {
-  label?: string;
-  value?: T[K];
-};
-
-export type ITableFilter<T = any> = {
-  [K in keyof T]-?: {
-    key: K;
-    // label?: string;
-    initialValue?: {
-      (this: ITableFilter<T>): ITableFilter<T>['options'][number];
-    };
-    options: ITableFilterOption<T, K>[];
-    matchMode: MatchMode;
-  };
-}[keyof T];
-
 @Component({
   selector: 'softbar-app-table-filters',
   templateUrl: './table-filters.component.html',
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./table-filters.component.scss'],
+  imports: [CommonModule, ReactiveFormsModule, TableSelectInputComponent],
 })
-export class TableFiltersComponent<T = { any: '' }>
+export class TableFiltersComponent<T = any>
   extends BaseComponent
   implements OnInit
 {
   public form?: NewFormGroup<T, NewFormGroup<FilterInsideObject, FormControl>>;
+  @Input() public showResetFilters?: boolean | string;
   @Input() public filters?: ITableFilter<T>[];
   @Output() public filterChange: EventEmitter<
     LazyLoadEvent<T>['filters'][number]
@@ -75,8 +61,27 @@ export class TableFiltersComponent<T = { any: '' }>
         (p, c) => ({
           ...p,
           [c.key]: this.fb.group({
-            matchMode: this.fb.control(c.matchMode),
-            value: this.fb.control(null),
+            matchMode: this.fb.control(null),
+            value: (() => {
+              const control = this.fb.control(null);
+              switch (c?.type) {
+                case 'number': {
+                  control.valueChanges.subscribe((value) => {
+                    if (value === '') {
+                      control.setValue(null, { emitEvent: false });
+                    } else {
+                      control.setValue(Number(value), {
+                        emitEvent: false,
+                      });
+                    }
+                  });
+                  break;
+                }
+                default:
+                  break;
+              }
+              return control;
+            })(),
           }),
         }),
         {}

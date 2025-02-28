@@ -18,7 +18,7 @@
         "main": "apps/main-app/src/main.ts",
         "tsConfig": "apps/main-app/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "baseHref": "/nx/",
+        "baseHref": "/trainees/",
         "assets": [
           "apps/main-app/src/favicon.ico",
           "apps/main-app/src/assets",

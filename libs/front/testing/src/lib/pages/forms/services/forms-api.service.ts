@@ -8,7 +8,7 @@ import { ControllerApiType, User } from '@softbar/api-interfaces';
   providedIn: 'root',
 })
 export class FormsApiService
-  extends BaseHttpService<''>
+  extends BaseHttpService<'students'>
   implements Pick<ControllerApiType<''>, 'helloForm'>
 {
   readonly collationName = '';

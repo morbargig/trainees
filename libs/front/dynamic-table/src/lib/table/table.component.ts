@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-extra-non-null-assertion */
-/* eslint-disable @typescript-eslint/member-ordering */
 import {
   ChangeDetectionStrategy,
   Component,
@@ -18,6 +15,7 @@ import { LoadingCellComponent } from './cell-components/loading-cell/loading-cel
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 import { FilterHiddenPipe } from './pipes/filter-hidden.pipe';
+import { MatTableModule } from '@angular/material/table';
 import {
   tableBodyStylesObj,
   tableElements,
@@ -36,6 +34,7 @@ import {
     LoadingCellComponent,
     TranslateModule,
     FilterHiddenPipe,
+    MatTableModule,
   ],
 })
 export class TableComponent<
@@ -48,6 +47,14 @@ export class TableComponent<
 
   public get shoHeader(): boolean {
     return !this.hideHeader && this.columns?.some((i) => !!i?.label);
+  }
+
+  get displayedColumns(): string[] {
+    return this.columns?.map((col) => col.id);
+  }
+
+  trackByField(_: number, col:  ITableColumn<T>): string {
+    return col.id;
   }
 
   // style and class section
@@ -104,7 +111,10 @@ export class TableComponent<
   // table cells configuration section
   private _columns: ITableColumn<T>[] = [];
   @Input() public set columns(cols: ITableColumn<T>[]) {
-    this._columns = cols;
+    this._columns = cols?.map((v, i) => {
+      v['id'] = v?.field?.toString() + '_' + i;
+      return v;
+    });
   }
 
   public get columns(): ITableColumn<T>[] {
@@ -129,9 +139,6 @@ export class TableComponent<
 
   @Input()
   public set items(val: T[] | undefined) {
-    if (!!this.extendsColumns?.length || !!this.getExtendsColumnsArr) {
-      this.panelOpenState = val?.map(() => false) || [];
-    }
     this.loading = false;
     this._items = val;
   }
@@ -140,33 +147,12 @@ export class TableComponent<
   @Input() public loading?: boolean;
   @Input() public loadingRowsLength?: number;
 
-  // table extends row configuration
-  getExtendsColSpan = (lastTd: boolean) =>
-    this.columns?.length / (this?.extendsColumns?.length || 0) +
-    +(lastTd ? this.columns?.length % 2 : 0);
-  @Input() extendsColumns?: ITableColumn<E>[];
-  @Input() getExtendsColumnsArr?: (item: T) => ITableColumn<E>[][];
-  @Input() getExtendsData?: (item: T, index?: number) => E;
-  @Output() extend = new EventEmitter<{ index: number; isOpen: boolean }>();
-  getExtendsDataItems = (
-    items: T[] | undefined = this.items
-  ): E[] | undefined =>
-    items?.map((item, index) => this.getExtendsData!?.(item, index));
-  panelOpenState: boolean[] = [];
-  togglePanel = (index: number, state?: boolean) => {
-    if (!!this.extendsColumns?.length || !!this.getExtendsColumnsArr) {
-      this.panelOpenState[index] =
-        state !== undefined ? state : !this.panelOpenState[index];
-    }
-    this.extend.emit({ index: index, isOpen: state });
-  };
-
   // more items
   showAll?: boolean;
   @Input() showLimitNumber?: number;
   @Input() showMoreTextsObj?: { more: string; less: string } = {
-    more: 'כל הפריטים',
-    less: 'הסתר',
+    more: 'show all',
+    less: 'less',
   };
   moreItems = (): void => {
     this.showAll = !this.showAll;
