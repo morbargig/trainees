@@ -42,9 +42,11 @@ jobs:
       - name: Build project
         run: npx nx run main-app:build:production
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.ACTIONS_PAT }}
-          publish_dir: ./dist/apps/main-app
-          publish_branch: gb-pages
+          path: ./dist/apps/main-app
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
