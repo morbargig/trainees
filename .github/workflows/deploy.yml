@@ -33,17 +33,3 @@ jobs:
       - name: Install dependencies
         run: npm ci  # Faster and more stable than npm install
 
-      - name: Run Unit Tests
-        run: npx nx run main-app:test --ci
-
-      - name: Build project
-        run: npx nx run main-app:build:production
-
-      - name: Upload Artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v2  # This is the correct action
-        with:
-          path: ./dist/apps/main-app
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
