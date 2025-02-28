@@ -1,14 +1,6 @@
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches:
-      - main
-
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -22,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}-v2  # Change the key to clear cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -32,13 +24,8 @@ jobs:
       - name: Build project
         run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2  # Update this line
         with:
           name: build
-          path: build/
-
-      - name: Deploy to GitHub Pages
-        uses: actions/upload-pages-artifact@v1
-        with:
           path: build/
