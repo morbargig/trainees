@@ -54,6 +54,7 @@ import { MatButtonModule } from '@angular/material/button';
       [columns]="columns"
     >
     </softbar-app-table>
+    @if (items?.length){
     <softbar-app-table-paging
       class="flex print:hidden"
       [pageSize]="pageSize"
@@ -61,6 +62,7 @@ import { MatButtonModule } from '@angular/material/button';
       (pageChange)="firePage($event)"
       [totalRecords]="totalRecords"
     ></softbar-app-table-paging>
+    }
   </mat-card>`,
   imports: [
     MatCard,
@@ -176,7 +178,11 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
     this.lazyEvent?.next({ ...this.lazyEvent.value, pageNum: pageNum - 1 });
   }
   public fireFilter(filter: FilterObject<IStudentElementModel>) {
-    this.lazyEvent?.next({ ...this.lazyEvent.value, filters: [filter] });
+    this.lazyEvent?.next({
+      ...this.lazyEvent.value,
+      filters: [filter],
+      pageNum: 0,
+    });
   }
 
   override columns: ITableColumn<IStudentElementModel>[] = [
