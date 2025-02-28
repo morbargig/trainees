@@ -42,7 +42,7 @@ jobs:
         run: npm ci  # Faster and more stable than npm install
 
       - name: Run Unit Tests
-        run: npx nx run main-app:test --ci
+        run: npx nx run main-app:test
 
       - name: Build project
         run: npx nx run main-app:build:production
