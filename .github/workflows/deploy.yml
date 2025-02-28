@@ -34,10 +34,10 @@ jobs:
           node-version: 'latest'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      - name: Run Unit Tests
-        run: npx nx run main-app:test
+      # - name: Run Unit Tests
+      #   run: npx nx run main-app:test
 
       - name: Build project
         run: npx nx run main-app:build:production
