@@ -1,15 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ['main']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@v4
         with:
-          node-version: '16'
+          fetch-depth: 0  # Ensures full repo history
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Use a stable version
+          cache: 'npm'  
+     
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -17,15 +37,21 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
+   
       - name: Install dependencies
-        run: npm install
+        run: npm ci  # Faster and more stable than npm install
+
+      - name: Run Unit Tests
+        run: npx nx run main-app:test --ci
 
       - name: Build project
-        run: npm run build
+        run: npx nx run main-app:build:production
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v2  # Update this line
+      - name: Upload Artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v2  # This is the correct action
         with:
-          name: build
-          path: build/
+          path: ./dist/apps/main-app
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
