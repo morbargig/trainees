@@ -22,16 +22,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensures full history for nx caching
+          fetch-depth: 0  # Ensures full repo history
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: '20'  # Use a stable version
+          cache: 'npm'  
 
       - name: Install dependencies
-        run: npm ci  # Cleaner and faster than npm install
+        run: npm ci  # Faster and more stable than npm install
 
       - name: Run Unit Tests
         run: npx nx run main-app:test --ci
@@ -40,7 +40,7 @@ jobs:
         run: npx nx run main-app:build:production
 
       - name: Upload Artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v2  # This is the correct action
         with:
           path: ./dist/apps/main-app
 
