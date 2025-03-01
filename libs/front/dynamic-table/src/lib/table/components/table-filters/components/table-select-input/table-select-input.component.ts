@@ -1,4 +1,4 @@
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -24,9 +24,18 @@ import { MatchMode } from '../../lazy-load-event.type';
   ],
   encapsulation: ViewEncapsulation.None,
   templateUrl: './table-select-input.component.html',
-  styleUrls: ['./table-select-input.component.scss'],
+  styles:[`.mat-mdc-notch-piece.mdc-notched-outline__notch {
+    border-right: 0 !important;
+  }
+  
+  mat-label {
+    padding: 0.5em;
+    z-index: auto;
+    display: block;
+  }
+  `]
 })
-export class TableSelectInputComponent<T = any> {
+export class TableSelectInputComponent<T = any> implements OnInit {
   @Input({ required: true }) ctl: ITableFilter<T>;
   @Input({ required: true }) matchModeFormControl: FormControl<MatchMode>;
   @Input({ required: true }) inputFormControl: FormControl<string | number>;
@@ -34,5 +43,10 @@ export class TableSelectInputComponent<T = any> {
   setMatchMode(mode: ITableFilter<T>['matchModes'][number]) {
     this.selectedMode = mode;
     this.matchModeFormControl.setValue(mode.matchMode);
+  }
+  ngOnInit(): void {
+    this.selectedMode = this.ctl?.matchModes?.find(
+      (i) => i?.matchMode == this.matchModeFormControl.value
+    );
   }
 }

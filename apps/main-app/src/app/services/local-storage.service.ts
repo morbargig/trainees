@@ -21,9 +21,9 @@ export abstract class LocalStorageHttpService<
 > implements Omit<BaseHttpService<C>, 'httpClient' | 'getUrl'>
 {
   constructor(
+    public controllerPath: C,
     protected tableFiltersServiceService: TableFiltersServiceService
   ) {}
-  public controllerPath: C;
   public get apiUrl(): string {
     throw new Error('Method not implemented.');
   }

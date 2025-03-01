@@ -32,6 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
     <h2 class="py-4">Filters</h2>
     <div class="flex pb-2 justify-between items-center">
       <softbar-app-table-filters
+        [saveStorageId]="filterLocalStorageKey"
         showResetFilters="Show All"
         (filterChange)="fireFilter($event)"
         [filters]="filters"
@@ -84,6 +85,7 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
       label: 'ID',
       key: 'id',
       type: 'number',
+      filterType: 'freeText',
       matchModes: [
         {
           label: 'Equals (=)',
@@ -115,6 +117,7 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
       label: 'Date',
       key: 'date',
       type: 'date',
+      filterType: 'freeText',
       matchModes: [
         {
           label: 'Equals (=)',
@@ -161,6 +164,8 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
       pageSize: this.pageSize,
     });
   }
+  filterLocalStorageKey = `page-dashboard-table-filters`;
+
   openPopUp(type: StudentFormComponent['data']['type']) {
     this.dialog.open<StudentFormComponent, StudentFormComponent['data']>(
       StudentFormComponent,

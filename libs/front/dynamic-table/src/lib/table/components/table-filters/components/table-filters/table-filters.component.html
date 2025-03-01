@@ -8,11 +8,23 @@
     [formGroup]="filterControl(ctl?.key)"
     class="flex gap-4 items-center"
   >
+    @switch (ctl?.filterType) { @case ('select') {
+    <softbar-app-table-select-filter
+      [formControlName]="'value'"
+      [filterCtl]="ctl"
+    />
+    } @case ('multiSelect') {
+    <softbar-app-table-multi-select-filter
+      [formControlName]="'value'"
+      [filterCtl]="ctl"
+    />
+    } @default {
     <softbar-table-select-input
       [ctl]="ctl"
       [matchModeFormControl]="$any(filterControl(ctl?.key).get('matchMode'))"
       [inputFormControl]="$any(filterControl(ctl?.key).get('value'))"
-    ></softbar-table-select-input>
+    />
+    } }
   </form>
 
   <!-- Reset Filters Button -->
@@ -26,6 +38,3 @@
   </button>
   }
 </form>
-
-<!-- <softbar-app-table-select-filter formControlName="value" [filterCtl]="ctl">
-    </softbar-app-table-select-filter> -->

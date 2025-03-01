@@ -25,5 +25,5 @@ export const ROUTES: Routes = [
         (m) => m.MonitorComponent
       ),
   },
-  { path: '**', redirectTo: '' },
+  { path: '**', title: 'Dashboard', redirectTo: '' },
 ];

@@ -8,7 +8,6 @@ const {
   baseBoxShadow,
   baseFontFamily,
 } = require('../../tailwind/tailwind-base.config');
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -43,9 +42,7 @@ module.exports = {
   },
   plugins: [
     plugin(function ({ addUtilities }) {
-      addUtilities(
-        baseFontSizes,
-      );
+      addUtilities(baseFontSizes);
     }),
   ],
 };

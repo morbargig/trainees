@@ -15,7 +15,6 @@ export class TableFiltersServiceService {
   private static filterByMatchMode<T>(i: T, f: FilterObject<T>, k: keyof T) {
     {
       const filterObj: FilterInsideObject<T[keyof T]> = f[k];
-      debugger
       // const matchMode = MatchMode[filterObj.matchMode];
       if (!filterObj?.matchMode) return true;
       switch (filterObj.matchMode) {
@@ -163,11 +162,11 @@ export class TableFiltersServiceService {
           break;
         }
         default: {
-          // return true;
+          return true;
           break;
         }
       }
-      // return true;
+      return true;
     }
   }
 
