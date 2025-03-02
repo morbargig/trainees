@@ -28,7 +28,6 @@ import { StudentLocalStorageService } from '../../services/school/student.servic
         <h1>Monitor</h1>
       </mat-card-title>
     </div>
-    <h2 class="py-4">Filters</h2>
     <div class="flex pb-2 justify-between items-center">
       <softbar-app-table-filters
         [saveStorageId]="filterLocalStorageKey"
