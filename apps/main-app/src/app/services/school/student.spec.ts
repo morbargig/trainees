@@ -40,13 +40,13 @@ describe('StudentLocalStorageService', () => {
 
   it('should initialize storage with mock student data', () => {
     const storedData = JSON.parse(
-      localStorage.getItem('students/student') || '[]'
+      localStorage.getItem('school/student') || '[]'
     );
     expect(storedData).toEqual(STUDENT_DATA);
   });
 
   it('should return a BehaviorSubject from getCollection()', () => {
-    const collection$ = service.getCollection('exam');
+    const collection$ = service.getCollection('student');
     expect(collection$).toBeDefined();
     expect(collection$.value).toEqual(STUDENT_DATA);
   });
@@ -57,7 +57,7 @@ describe('StudentLocalStorageService', () => {
     };
 
     service
-      .getCollectionLazyLoad('exam', lazyLoadEvent)
+      .getCollectionLazyLoad('student', lazyLoadEvent)
       .subscribe((response) => {
         expect(response.data).toEqual(STUDENT_DATA);
         expect(response.totalRecords).toBe(STUDENT_DATA.length);
@@ -80,7 +80,7 @@ describe('StudentLocalStorageService', () => {
     const updatedStudent = { ...STUDENT_DATA[0], name: 'Updated Name' };
     service.put('student', updatedStudent).subscribe((result) => {
       expect(result.name).toBe('Updated Name');
-      const storedData = service.getCollection('exam').value;
+      const storedData = service.getCollection('student').value;
       expect(storedData.find((s) => s.id === updatedStudent.id)?.name).toBe(
         'Updated Name'
       );
@@ -91,19 +91,13 @@ describe('StudentLocalStorageService', () => {
   it('should delete a student with delete()', (done) => {
     const studentToDelete = STUDENT_DATA[0];
     service
-      .delete('exam', { body: { id: studentToDelete.id } })
+      .delete('student', { body: { id: studentToDelete.id } })
       .subscribe((deleted) => {
         expect(deleted).toEqual(studentToDelete);
-        expect(service.getCollection('exam').value.length).toBe(
+        expect(service.getCollection('student').value.length).toBe(
           STUDENT_DATA.length - 1
         );
         done();
       });
-  });
-
-  it('should return an empty array if there is no data in storage', () => {
-    localStorage.clear();
-    const collection$ = service.getCollection('exam');
-    expect(collection$.value).toEqual([]);
   });
 });

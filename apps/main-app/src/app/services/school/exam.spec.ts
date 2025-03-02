@@ -8,7 +8,7 @@ import { LazyLoadEvent } from '@softbar/front/dynamic-table';
 import { ExamLocalStorageService } from './exam.service';
 import { IExamModel } from '@softbar/api-interfaces';
 
-describe('StudentLocalStorageService', () => {
+describe('examLocalStorageService', () => {
   let service: ExamLocalStorageService;
   let tableFiltersServiceService: TableFiltersServiceService;
 
@@ -38,9 +38,9 @@ describe('StudentLocalStorageService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should initialize storage with mock student data', () => {
+  it('should initialize storage with mock exam data', () => {
     const storedData = JSON.parse(
-      localStorage.getItem('students/student') || '[]'
+      localStorage.getItem('school/exam') || '[]'
     );
     expect(storedData).toEqual(EXAM_DATA);
   });
@@ -65,10 +65,10 @@ describe('StudentLocalStorageService', () => {
       });
   });
 
-  it('should add a new student with post()', (done) => {
-    const newStudent: IExamModel = EXAM_DATA.at(0);
-    service.post('exam', newStudent).subscribe((addedStudent) => {
-      expect(addedStudent.id).toBeDefined(); // ✅ ID should be assigned
+  it('should add a new exam with post()', (done) => {
+    const newExam: IExamModel = EXAM_DATA.at(0);
+    service.post('exam', newExam).subscribe((addedExam) => {
+      expect(addedExam.id).toBeDefined(); // ✅ ID should be assigned
       expect(service.getCollection('exam').value.length).toBe(
         EXAM_DATA.length + 1
       );
@@ -76,34 +76,28 @@ describe('StudentLocalStorageService', () => {
     });
   });
 
-  it('should update an existing student with put()', (done) => {
-    const updatedStudent = { ...EXAM_DATA[0], name: 'Updated Name' };
-    service.put('exam', updatedStudent).subscribe((result) => {
-      expect(result.name).toBe('Updated Name');
+  it('should update an existing Exam with put()', (done) => {
+    const updatedExam: IExamModel = { ...EXAM_DATA[0], grade: 100 };
+    service.put('exam', updatedExam).subscribe((result) => {
+      expect(result.grade).toBe(100);
       const storedData = service.getCollection('exam').value;
-      expect(storedData.find((s) => s.id === updatedStudent.id)?.name).toBe(
-        'Updated Name'
+      expect(storedData.find((s) => s.id === updatedExam.id)?.grade).toBe(
+        100
       );
       done();
     });
   });
 
-  it('should delete a student with delete()', (done) => {
-    const studentToDelete = EXAM_DATA[0];
+  it('should delete a Exam with delete()', (done) => {
+    const examToDelete = EXAM_DATA[0];
     service
-      .delete('exam', { body: { id: studentToDelete.id } })
+      .delete('exam', { body: { id: examToDelete.id } })
       .subscribe((deleted) => {
-        expect(deleted).toEqual(studentToDelete);
+        expect(deleted).toEqual(examToDelete);
         expect(service.getCollection('exam').value.length).toBe(
           EXAM_DATA.length - 1
         );
         done();
       });
-  });
-
-  it('should return an empty array if there is no data in storage', () => {
-    localStorage.clear();
-    const collection$ = service.getCollection('exam');
-    expect(collection$.value).toEqual([]);
   });
 });

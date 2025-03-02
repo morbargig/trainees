@@ -25,6 +25,7 @@ import { AverageByStudentComponent } from './charts/average-by-student.component
 import { AverageOverTimeComponent } from './charts/average-by-student-over-tie.component';
 @Component({
   selector: 'softbar-analysis',
+  standalone: true,
   imports: [
     CommonModule,
     TableFiltersComponent,

@@ -1,14 +1,7 @@
-import {
-  Component,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
-  Input,
-  SimpleChanges,
-  OnChanges,
-} from '@angular/core';
-import { IExamModel } from '@softbar/api-interfaces';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { Component, OnChanges, AfterViewInit, ViewChild, ElementRef, Input, SimpleChanges } from "@angular/core";
+import { IExamModel } from "@softbar/api-interfaces";
+import { NgxChartsModule } from "@swimlane/ngx-charts";
+
 
 @Component({
   selector: 'softbar-analysis-average-by-subject-chart',

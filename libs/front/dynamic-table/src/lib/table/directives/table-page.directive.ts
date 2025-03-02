@@ -56,15 +56,16 @@ export abstract class TableBasePager<T = any, E = T>
         this.takeUntilDestroy(),
         debounceTime(100),
         switchMap((evt) => {
-          console.log('TableBasePager dataEvent.pipe evt', evt);
+          // console.log('TableBasePager dataEvent.pipe evt', evt);
           this.loading = true;
           return this.getDataProvider(evt) || EMPTY;
         })
       )
       .pipe(
-        tap((data) => {
-          console.log('table-page dataEvent', data);
-        })
+        // tap((data) => {
+        //   console.log('table-page dataEvent', data);
+        // }),
+        this.takeUntilDestroy()
       )
       .subscribe(({ data, totalRecords }) => {
         this.items = data || [];
