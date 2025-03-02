@@ -12,7 +12,7 @@ import {
 import { IExamModel, IStudentModel } from '@softbar/api-interfaces';
 import { ExamLocalStorageService } from '../../services/school/exam.service';
 import { combineLatest, Observable, Subject, take, tap } from 'rxjs';
-import { MatCard, MatCardContent } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardTitle } from '@angular/material/card';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -35,11 +35,17 @@ import { AverageOverTimeComponent } from './charts/average-by-student-over-tie.c
     AverageBySubjectComponent,
     AverageByStudentComponent,
     AverageOverTimeComponent,
+    MatCardTitle,
   ],
   template: `
     <div class="analysis-view-wrapper p-3">
       <mat-card>
         <mat-card-content>
+          <div class="flex justify-between">
+            <mat-card-title>
+              <h1>Analysis</h1>
+            </mat-card-title>
+          </div>
           <!-- filters -->
           <softbar-app-table-filters
             [saveStorageId]="filterLocalStorageKey"

@@ -25,7 +25,7 @@ import { StudentLocalStorageService } from '../../services/school/student.servic
   template: ` <mat-card class="table-card h-full !m-0 p-7">
     <div class="flex justify-between">
       <mat-card-title>
-        <h1>Trainee Data</h1>
+        <h1>Monitor</h1>
       </mat-card-title>
     </div>
     <h2 class="py-4">Filters</h2>
