@@ -5,8 +5,8 @@ export const ROUTES: Routes = [
     title: 'Dashboard',
     path: '',
     loadComponent: () =>
-      import('./pages/dashboard/dashboard.component').then(
-        (m) => m.DashboardComponent
+      import('./pages/data/data.component').then(
+        (m) => m.DataComponent
       ),
   },
   {

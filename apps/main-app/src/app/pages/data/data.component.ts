@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Type, OnInit } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { MatCard, MatCardTitle } from '@angular/material/card';
 import {
@@ -14,12 +14,13 @@ import {
   TablePagingComponent,
 } from '@softbar/front/dynamic-table';
 import { MatDialog } from '@angular/material/dialog';
-import { IStudentElementModel } from '@softbar/api-interfaces';
-import { StudentFormComponent } from '../../components/student-form/student-form.component';
-import { StudentLocalStorageService } from '../../services/student.service';
+import { IExamModel, IStudentModel } from '@softbar/api-interfaces';
+import { ExamFormComponent } from '../../components/popups/exam-form.component';
+import { ExamLocalStorageService } from '../../services/school/exam.service';
 import { MatIcon } from '@angular/material/icon';
-import { Observable } from 'rxjs';
+import { Observable, skip, take } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
+import { StudentLocalStorageService } from '../../services/school/student.service';
 
 @Component({
   selector: 'softbar-home',
@@ -75,12 +76,19 @@ import { MatButtonModule } from '@angular/material/button';
     TableFiltersComponent,
     MatButtonModule,
   ],
+  standalone: true,
 })
-export class DashboardComponent extends TableBasePager<IStudentElementModel> {
+export class DataComponent
+  extends TableBasePager<IExamModel>
+  implements OnInit
+{
+  public getLazyEvent() {
+    return this.lazyEvent;
+  }
   @HostBinding('class') public class: string = ((ngClass = 'h-full') =>
     ngClass)();
   public readonly pageSize = 10;
-  public override readonly filters: ITableFilter<IStudentElementModel>[] = [
+  public override readonly filters: ITableFilter<IExamModel>[] = [
     {
       label: 'ID',
       key: 'id',
@@ -106,6 +114,10 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
         {
           label: 'Greater Than Or Equals (=<)',
           matchMode: MatchMode.GreaterThanOrEquals,
+        },
+        {
+          label: 'Contains',
+          matchMode: MatchMode.Contains,
         },
         {
           label: 'None',
@@ -146,29 +158,46 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
       ],
     },
   ];
-  public override getDataProvider(
-    evt: LazyLoadEvent
-  ): Observable<FilterDataResponse<IStudentElementModel>> {
-    return this.studentLocalStorageService.getCollectionLazyLoad(
-      'student',
-      evt
-    );
+
+  ngOnInit(): void {
+    const filter = history.state?.filter;
+    if (filter) {
+      this.lazyEvent
+        .pipe(skip(1), take(1))
+        .subscribe(() => {
+          requestAnimationFrame(() => {
+            this.fireFilter(filter);
+          });
+        });
+    }
   }
+
+  getDataProvider(
+    evt: LazyLoadEvent
+  ): Observable<FilterDataResponse<IExamModel>> {
+    return this.examLocalStorageService.getCollectionLazyLoad('exam', evt);
+  }
+  students: IStudentModel[];
   constructor(
     private dialog: MatDialog,
-    private studentLocalStorageService: StudentLocalStorageService // private appMainAppTranslationService: AppMainAppTranslationService
+    private examLocalStorageService: ExamLocalStorageService,
+    studentLocalStorageService: StudentLocalStorageService
   ) {
     super();
+    studentLocalStorageService
+      .getCollection('student')
+      .pipe(take(1))
+      .subscribe((x) => (this.students = x));
     this.lazyEvent.next({
       pageNum: 0,
       pageSize: this.pageSize,
     });
   }
-  filterLocalStorageKey = `page-dashboard-table-filters`;
+  filterLocalStorageKey = `page-data-table-filters` as const;
 
-  openPopUp(type: StudentFormComponent['data']['type']) {
-    this.dialog.open<StudentFormComponent, StudentFormComponent['data']>(
-      StudentFormComponent,
+  openPopUp(type: ExamFormComponent['data']['type']) {
+    this.dialog.open<ExamFormComponent, ExamFormComponent['data']>(
+      ExamFormComponent,
       {
         data: {
           id: undefined,
@@ -182,7 +211,7 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
   public firePage({ pageNum }: LazyLoadEvent) {
     this.lazyEvent?.next({ ...this.lazyEvent.value, pageNum: pageNum - 1 });
   }
-  public fireFilter(filter: FilterObject<IStudentElementModel>) {
+  public fireFilter(filter: FilterObject<IExamModel>) {
     this.lazyEvent?.next({
       ...this.lazyEvent.value,
       filters: [filter],
@@ -190,20 +219,44 @@ export class DashboardComponent extends TableBasePager<IStudentElementModel> {
     });
   }
 
-  override columns: ITableColumn<IStudentElementModel>[] = [
+  override columns: ITableColumn<IExamModel>[] = [
     { field: 'id', type: 'Default', label: 'ID' },
-    { field: 'name', type: 'Default', label: 'Name' },
+    {
+      field: 'studentId',
+      type: 'Default',
+      label: 'Name',
+      parsedData: (studentId) =>
+        this.students?.find((i) => i?.id === studentId)?.name,
+    },
     { field: 'date', label: 'Date', type: 'Date' },
     { field: 'grade', label: 'Grade', type: 'Default' },
     { field: 'subject', label: 'Subject', type: 'Default' },
     {
       field: 'id',
-      label: 'Actions',
+      label: 'Test Actions',
       type: 'DynamicLazy',
       loadCustomCellComponent: ({ calBack }) =>
-        import('../../components/action-cell/action-cell.component').then((m) =>
+        import('../../components/action-cell/exam-action-cell.component').then(
+          (m) =>
+            calBack({
+              component: m.ExamActionCellComponent,
+            })
+        ),
+    },
+    {
+      field: 'studentId',
+      label: 'Student Actions',
+      type: 'DynamicLazy',
+      loadCustomCellComponent: ({ calBack }) =>
+        import(
+          '../../components/action-cell/student-action-cell.component'
+        ).then((m) =>
           calBack({
-            component: m.ClaimNumCellComponent,
+            component: m.StudentActionCellComponent as Type<
+              InstanceType<
+                typeof m.StudentActionCellComponent<IExamModel, 'studentId'>
+              >
+            >,
           })
         ),
     },

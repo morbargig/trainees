@@ -7,7 +7,7 @@ type Routes = {
 };
 
 const BFF_ROUTES = {
-  students: BFF_APP_CONTROL_ROUTES,
+  school: BFF_APP_CONTROL_ROUTES,
 } as const satisfies Routes;
 
 export type BFF_ROUTES_TYPE = typeof BFF_ROUTES;

@@ -7,6 +7,7 @@
     *ngFor="let ctl of filters"
     [formGroup]="filterControl(ctl?.key)"
     class="flex gap-4 items-center"
+    [ngClass]="ctl?.hidden ? 'hidden' : ''"
   >
     @switch (ctl?.filterType) { @case ('select') {
     <softbar-app-table-select-filter

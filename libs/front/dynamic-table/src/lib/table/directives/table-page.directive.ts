@@ -49,7 +49,7 @@ export abstract class TableBasePager<T = any, E = T>
     evt: LazyLoadEvent
   ): Observable<FilterDataResponse<T>>;
 
-  protected constructor() {
+  constructor() {
     super();
     this.lazyEvent
       .pipe(

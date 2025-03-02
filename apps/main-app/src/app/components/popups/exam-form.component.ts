@@ -4,16 +4,16 @@ import {
   MAT_DIALOG_DATA,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { IStudentElementModel } from '@softbar/api-interfaces';
+import { IExamModel } from '@softbar/api-interfaces';
 import {
   DynamicFormGroupComponent,
   DynamicFormControl,
 } from '@softbar/front/dynamic-forms';
-import { StudentLocalStorageService } from '../../services/student.service';
+import { ExamLocalStorageService } from '../../services/school/exam.service';
 import { MatIcon } from '@angular/material/icon';
 import { MatCard } from '@angular/material/card';
 import { MatToolbar } from '@angular/material/toolbar';
-import { take } from 'rxjs';
+import { map, take } from 'rxjs';
 import { Validators } from '@angular/forms';
 
 @Component({
@@ -69,15 +69,15 @@ import { Validators } from '@angular/forms';
     MatToolbar,
   ],
 })
-export class StudentFormComponent {
+export class ExamFormComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
       type: 'Show' | 'Edit' | 'Duplicate' | 'Create';
-      id: IStudentElementModel['id'];
+      id: IExamModel['id'];
     },
-    private studentLocalStorageService: StudentLocalStorageService,
-    private dialogRef: MatDialogRef<StudentFormComponent> // Inject MatDialogRef
+    private studentLocalStorageService: ExamLocalStorageService,
+    private dialogRef: MatDialogRef<ExamFormComponent> // Inject MatDialogRef
   ) {
     switch (this.data?.type) {
       case 'Edit':
@@ -86,15 +86,14 @@ export class StudentFormComponent {
         const { configs } = this;
         this.configs = [];
         this.studentLocalStorageService
-          .get('student', { params: { id: this.data?.id } })
+          .get('exam', { params: { id: this.data?.id } })
           .pipe(take(1))
           .subscribe((student) => {
             configs.forEach((dynConf) => {
               if (
                 Object.prototype.hasOwnProperty.call(student, dynConf.field)
               ) {
-                dynConf.value =
-                  student[dynConf.field as keyof IStudentElementModel];
+                dynConf.value = student[dynConf.field as keyof IExamModel];
               }
             });
             switch (this.data.type) {
@@ -115,14 +114,15 @@ export class StudentFormComponent {
         break;
       }
       case 'Create': {
-        const idConfig: DynamicFormControl<IStudentElementModel> =
-          this.configs.find((i) => i?.field === 'id');
+        const idConfig: DynamicFormControl<IExamModel> = this.configs.find(
+          (i) => i?.field === 'id'
+        );
         idConfig.hidden = true;
         idConfig.disabled = true;
       }
     }
   }
-  formOnSubmit(t: IStudentElementModel) {
+  formOnSubmit(t: IExamModel) {
     switch (this.data.type) {
       case 'Duplicate':
       case 'Create':
@@ -131,7 +131,7 @@ export class StudentFormComponent {
           ? this.studentLocalStorageService.put
           : this.studentLocalStorageService.post
         )
-          .bind(this.studentLocalStorageService)('student', t)
+          .bind(this.studentLocalStorageService)('exam', t)
           .pipe()
           .subscribe((x) => {
             !!x && this.close();
@@ -145,7 +145,7 @@ export class StudentFormComponent {
     return this.dialogRef.close();
   }
 
-  configs: DynamicFormControl<IStudentElementModel>[] = [
+  configs: DynamicFormControl<IExamModel>[] = [
     {
       field: 'id',
       type: 'Default',
@@ -161,21 +161,22 @@ export class StudentFormComponent {
       },
     },
     {
-      field: 'name',
-      type: 'Default',
-      label: 'Name',
-      validation: [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50),
-      ],
+      field: 'studentId',
+      type: 'FormSelect',
+      label: 'Student',
+      validation: [Validators.required],
       errorMessages: {
-        required: 'Name is required',
-        minLength: 'Name must be at least 2 characters',
-        maxLength: 'Name cannot exceed 50 characters',
+        required: 'Student is required',
       },
       data: {
-        inputType: 'text',
+        options: this.studentLocalStorageService.getCollection('student').pipe(
+          map((i) =>
+            i?.map((i) => ({
+              label: i?.name,
+              value: i?.id,
+            }))
+          )
+        ),
       },
     },
     {
@@ -204,19 +205,7 @@ export class StudentFormComponent {
         inputType: 'text',
       },
     },
-    {
-      field: 'email',
-      type: 'Default',
-      label: 'Email',
-      validation: [Validators.required, Validators.email],
-      errorMessages: {
-        required: 'Email is required',
-        email: 'Invalid email format',
-      },
-      data: {
-        inputType: 'email',
-      },
-    },
+
     {
       field: 'date',
       type: 'Default',
@@ -229,66 +218,79 @@ export class StudentFormComponent {
         inputType: 'date',
       },
     },
-    {
-      field: 'address',
-      type: 'Default',
-      label: 'Address',
-      validation: [
-        Validators.required,
-        Validators.minLength(5),
-        Validators.maxLength(100),
-      ],
-      errorMessages: {
-        required: 'Address is required',
-        minLength: 'Address must be at least 5 characters',
-        maxLength: 'Address cannot exceed 100 characters',
-      },
-      data: {
-        inputType: 'text',
-      },
-    },
-    {
-      field: 'city',
-      type: 'Default',
-      label: 'City',
-      validation: [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(50),
-      ],
-      errorMessages: {
-        required: 'City is required',
-        minLength: 'City must be at least 2 characters',
-        maxLength: 'City cannot exceed 50 characters',
-      },
-      data: {
-        inputType: 'text',
-      },
-    },
-    {
-      field: 'country',
-      type: 'Default',
-      label: 'Country',
-      validation: [Validators.required],
-      errorMessages: {
-        required: 'Country is required',
-      },
-      data: {
-        inputType: 'text',
-      },
-    },
-    {
-      field: 'zip',
-      type: 'Default',
-      label: 'Zip',
-      validation: [Validators.required, Validators.pattern('^[0-9]{5,6}$')],
-      errorMessages: {
-        required: 'ZIP code is required',
-        pattern: 'ZIP code must be a 5 or 6 digit number',
-      },
-      data: {
-        inputType: 'number',
-      },
-    },
+    // {
+    //   field: 'email',
+    //   type: 'Default',
+    //   label: 'Email',
+    //   validation: [Validators.required, Validators.email],
+    //   errorMessages: {
+    //     required: 'Email is required',
+    //     email: 'Invalid email format',
+    //   },
+    //   data: {
+    //     inputType: 'email',
+    //   },
+    // },
+    // {
+    //   field: 'address',
+    //   type: 'Default',
+    //   label: 'Address',
+    //   validation: [
+    //     Validators.required,
+    //     Validators.minLength(5),
+    //     Validators.maxLength(100),
+    //   ],
+    //   errorMessages: {
+    //     required: 'Address is required',
+    //     minLength: 'Address must be at least 5 characters',
+    //     maxLength: 'Address cannot exceed 100 characters',
+    //   },
+    //   data: {
+    //     inputType: 'text',
+    //   },
+    // },
+    // {
+    //   field: 'city',
+    //   type: 'Default',
+    //   label: 'City',
+    //   validation: [
+    //     Validators.required,
+    //     Validators.minLength(2),
+    //     Validators.maxLength(50),
+    //   ],
+    //   errorMessages: {
+    //     required: 'City is required',
+    //     minLength: 'City must be at least 2 characters',
+    //     maxLength: 'City cannot exceed 50 characters',
+    //   },
+    //   data: {
+    //     inputType: 'text',
+    //   },
+    // },
+    // {
+    //   field: 'country',
+    //   type: 'Default',
+    //   label: 'Country',
+    //   validation: [Validators.required],
+    //   errorMessages: {
+    //     required: 'Country is required',
+    //   },
+    //   data: {
+    //     inputType: 'text',
+    //   },
+    // },
+    // {
+    //   field: 'zip',
+    //   type: 'Default',
+    //   label: 'Zip',
+    //   validation: [Validators.required, Validators.pattern('^[0-9]{5,6}$')],
+    //   errorMessages: {
+    //     required: 'ZIP code is required',
+    //     pattern: 'ZIP code must be a 5 or 6 digit number',
+    //   },
+    //   data: {
+    //     inputType: 'number',
+    //   },
+    // },
   ];
 }

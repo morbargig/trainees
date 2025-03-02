@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*.ts", "src/app/components/student-form", "src/app/services/local-storage-session"],
+  "include": ["**/*.ts", "src/app/components/popups", "src/app/services/local-storage-session"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }

@@ -13,6 +13,7 @@ export type ITableFilter<T = any> = {
   [K in keyof T]-?: {
     label: string;
     key: K;
+    hidden?: boolean;
     filterType: 'freeText' | 'select' | 'multiSelect';
     // free text filter with match-mode dropdown
     type?: HTMLInputElement['type'];
@@ -23,7 +24,9 @@ export type ITableFilter<T = any> = {
     // select option filter
     matchMode?: MatchMode;
     initialValue?: {
-      (this: ITableFilter<T>): ITableFilter<T>['options'][number];
+      (this: ITableFilter<T>): ITableFilter<T>[
+        | 'options'
+        | 'matchModes'][number];
     };
     options?: ITableFilterOption<T, K>[];
     // multiselect filter

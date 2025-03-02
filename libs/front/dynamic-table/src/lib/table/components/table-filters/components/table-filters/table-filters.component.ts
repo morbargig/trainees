@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -21,9 +22,9 @@ import { BaseComponent } from '../../../../core/components/base-component.direct
 import { ITableFilter } from './helpers';
 import { CommonModule } from '@angular/common';
 import { TableSelectInputComponent } from '../table-select-input/table-select-input.component';
-import { Title } from '@angular/platform-browser';
 import { TableSelectFilterComponent } from '../table-select-filter/table-select-filter.component';
 import { TableMultiSelectFilterComponent } from '../table-multi-select-filter/table-multi-select-filter.component';
+import { Subject } from 'rxjs';
 
 class NewFormGroup<
   T,
@@ -46,7 +47,7 @@ class NewFormGroup<
     FormsModule,
     TableSelectInputComponent,
     TableSelectFilterComponent,
-    TableMultiSelectFilterComponent
+    TableMultiSelectFilterComponent,
   ],
 })
 export class TableFiltersComponent<T = any>
@@ -54,6 +55,9 @@ export class TableFiltersComponent<T = any>
   implements OnInit, OnDestroy
 {
   public form?: NewFormGroup<T, NewFormGroup<FilterInsideObject, FormControl>>;
+  @Input() CDRefEvent: Subject<keyof ChangeDetectorRef> = new Subject<
+    keyof ChangeDetectorRef
+  >();
   @Input({ required: false }) public showResetFilters?: boolean | string;
   @Input({ required: false }) public saveStorageId?: string;
   @Input({ required: true }) public filters?: ITableFilter<T>[];
@@ -64,7 +68,7 @@ export class TableFiltersComponent<T = any>
   public filterControl = (key: keyof T): FormGroup | null =>
     this.form?.controls?.[key] || null;
 
-  constructor(private fb: FormBuilder, private title: Title) {
+  constructor(private fb: FormBuilder, private cd: ChangeDetectorRef) {
     super();
   }
 
@@ -74,7 +78,9 @@ export class TableFiltersComponent<T = any>
         (p, c) => ({
           ...p,
           [c.key]: this.fb.group({
-            matchMode: this.fb.control(c?.matchMode),
+            matchMode: (() => {
+              return this.fb.control(c?.matchMode);
+            })(),
             value: (() => {
               const control = this.fb.control(null);
               switch (c?.type) {
@@ -111,8 +117,14 @@ export class TableFiltersComponent<T = any>
         this.filterChange.next(x);
       });
     if (this.saveStorageId) {
-      const savedFilter = JSON.parse(localStorage.getItem(this.saveStorageId));
+      const savedFilter =
+        JSON.parse(localStorage.getItem(this.saveStorageId)) || {};
+
       this.form.patchValue(savedFilter);
     }
+    this.CDRefEvent.pipe().subscribe((event) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-extra-non-null-assertion
+      this.cd?.[event]!?.();
+    });
   }
 }

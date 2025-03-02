@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, delay, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, map, Observable, of } from 'rxjs';
 import {
   BFF_ROUTES_TYPE,
   ExtractPaths,
-  IStudentElementModel,
   ResolvePath,
 } from '@softbar/api-interfaces';
 import { BaseHttpService } from './base-http.service';
@@ -13,11 +12,16 @@ import {
   TableFiltersServiceService,
 } from '@softbar/front/dynamic-table';
 
+type Mutable<T> = {
+  -readonly [P in keyof T]: T[P];
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export abstract class LocalStorageHttpService<
-  C extends ExtractPaths<BFF_ROUTES_TYPE> = ExtractPaths<BFF_ROUTES_TYPE>
+  C extends ExtractPaths<BFF_ROUTES_TYPE> = ExtractPaths<BFF_ROUTES_TYPE>,
+  T extends { id: number } = { id: number }
 > implements Omit<BaseHttpService<C>, 'httpClient' | 'getUrl'>
 {
   constructor(
@@ -28,52 +32,108 @@ export abstract class LocalStorageHttpService<
     throw new Error('Method not implemented.');
   }
 
-  private collections: {
-    [key in keyof ResolvePath<BFF_ROUTES_TYPE, C>]?: BehaviorSubject<any[]>;
-  } = {};
+  key<
+    H extends keyof {
+      [key in keyof ResolvePath<
+        BFF_ROUTES_TYPE,
+        ExtractPaths<BFF_ROUTES_TYPE>
+      > as `${ExtractPaths<BFF_ROUTES_TYPE>}/${Extract<key, string>}`]?: key;
+    },
+    K extends keyof ResolvePath<BFF_ROUTES_TYPE, ExtractPaths<BFF_ROUTES_TYPE>>
+  >(key: K): H {
+    return `${this.controllerPath}/${key}` as H;
+  }
+
+  static collections: Mutable<{
+    [key in keyof ResolvePath<
+      BFF_ROUTES_TYPE,
+      ExtractPaths<BFF_ROUTES_TYPE>
+    > as `${ExtractPaths<BFF_ROUTES_TYPE>}/${Extract<
+      key,
+      string
+    >}`]?: BehaviorSubject<any[]>;
+  }> = {};
 
   getCollection<
-    T = any,
     R extends C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
       : string = C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
-      : string
+      : string,
+    U extends {
+      [K in R]: 'get' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+        ? K
+        : never;
+    }[R] = {
+      [K in R]: 'get' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+        ? K
+        : never;
+    }[R],
+    T extends ResolvePath<BFF_ROUTES_TYPE, C>[U]['response'] = ResolvePath<
+      BFF_ROUTES_TYPE,
+      C
+    >[U]['response']
   >(key: R): BehaviorSubject<T[]> {
-    if (!this.collections[key]) {
-      const data = this.getDataFromStorage<any>(key);
-      this.collections[key] = new BehaviorSubject<any[]>(data);
+    const newKey = this.key(key);
+    if (!LocalStorageHttpService.collections[newKey]) {
+      const data = this.getDataFromStorage<R, U, T>(key);
+      LocalStorageHttpService.collections[newKey] = new BehaviorSubject<T[]>(
+        data
+      );
     }
-    return this.collections[key];
+    return LocalStorageHttpService.collections[newKey];
   }
 
   getCollectionLazyLoad<
-    T = any,
     R extends C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
       : string = C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
-      : string
-  >(key: R, evt: LazyLoadEvent<T>): Observable<FilterDataResponse<any>> {
-    if (!this.collections[key]) {
-      const data = this.getDataFromStorage<T>(key);
-      this.collections[key] = new BehaviorSubject<T[]>(data);
+      : string,
+    U extends {
+      [K in R]: 'get' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+        ? K
+        : never;
+    }[R] = {
+      [K in R]: 'get' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+        ? K
+        : never;
+    }[R],
+    T extends ResolvePath<BFF_ROUTES_TYPE, C>[U]['response'] = ResolvePath<
+      BFF_ROUTES_TYPE,
+      C
+    >[U]['response']
+  >(key: R, evt: LazyLoadEvent<T>): Observable<FilterDataResponse<T>> {
+    const newKey = this.key(key);
+    if (!LocalStorageHttpService.collections[newKey]) {
+      const data = this.getDataFromStorage<R, U, T>(key);
+      LocalStorageHttpService.collections[newKey] = new BehaviorSubject<T[]>(
+        data
+      );
     }
-    return this.collections[key]?.pipe(
+    return LocalStorageHttpService.collections[newKey]?.pipe(
       map((i) => {
         return this.tableFiltersServiceService.filter(i, evt);
-      }),
-      delay(1000)
+      })
+      // delay(300)
     );
   }
 
   protected getDataFromStorage<
-    T = any,
     R extends C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
       : string = C extends ExtractPaths<BFF_ROUTES_TYPE>
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
-      : string
+      : string,
+    U extends {
+      [K in R]: K;
+    }[R] = {
+      [K in R]: K;
+    }[R],
+    T extends ResolvePath<BFF_ROUTES_TYPE, C>[U]['response'] = ResolvePath<
+      BFF_ROUTES_TYPE,
+      C
+    >[U]['response']
   >(key: R): T[] {
     const storedData = localStorage.getItem(`${this.controllerPath}/${key}`);
     return storedData ? JSON.parse(storedData) : [];
@@ -86,8 +146,9 @@ export abstract class LocalStorageHttpService<
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
       : string
   >(key: R, data: any[]): void {
+    const newKey = this.key(key);
     localStorage.setItem(`${this.controllerPath}/${key}`, JSON.stringify(data));
-    this.collections[key]?.next(data);
+    LocalStorageHttpService.collections[newKey]?.next(data);
   }
 
   get<
@@ -110,13 +171,9 @@ export abstract class LocalStorageHttpService<
       C
     >[U]['response']
   >(key: R, { params }: { params: { id: number } }): Observable<T> {
-    return this.getCollection(key)
+    return this.getCollection<R, U, T>(key)
       .asObservable()
-      ?.pipe(
-        map((l) =>
-          l?.find((i) => (i as IStudentElementModel)?.id === Number(params.id))
-        )
-      );
+      ?.pipe(map((l) => l?.find((i) => i?.id === Number(params.id))));
   }
 
   post<
@@ -171,10 +228,7 @@ export abstract class LocalStorageHttpService<
     >[U]['response']
   >(key: R, updatedItem: T): Observable<T> {
     const collection = this.getDataFromStorage(key).map((item) =>
-      (item as IStudentElementModel).id ===
-      (updatedItem as IStudentElementModel).id
-        ? updatedItem
-        : item
+      item.id === updatedItem.id ? updatedItem : item
     );
     this.saveDataToStorage(key, collection);
     return of(updatedItem);
@@ -187,11 +241,11 @@ export abstract class LocalStorageHttpService<
       ? keyof ResolvePath<BFF_ROUTES_TYPE, C>
       : string,
     U extends {
-      [K in R]: 'post' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+      [K in R]: 'delete' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
         ? K
         : never;
     }[R] = {
-      [K in R]: 'post' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
+      [K in R]: 'delete' extends ResolvePath<BFF_ROUTES_TYPE, C>[K]['method']
         ? K
         : never;
     }[R],
@@ -201,7 +255,7 @@ export abstract class LocalStorageHttpService<
     >[U]['response']
   >(key: R, { body }: { body: { id: string | number } }): Observable<T> {
     let deletedItem: T;
-    const collection = this.getDataFromStorage(key).filter((item) => {
+    const collection = this.getDataFromStorage<R, U, T>(key).filter((item) => {
       if (item.id !== body?.id) {
         return true;
       } else {

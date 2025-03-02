@@ -23,15 +23,26 @@ export interface User {
   // payment: [{ obj: [{ obj2: [{ obj3: number[][] }] }] }];
 }
 
-export interface IStudentElementModel {
+export interface IExamModel {
+  id: number;
+  studentId: number;
+  subject: string;
+  grade: number;
+  date: `${number}-${number}-${number}`;
+}
+
+export interface IStudentModel {
+  dateJoined: `${number}-${number}-${number}`;
   name: string;
   id: number;
-  grade: number;
-  subject: string;
   email: string;
-  date: `${number}-${number}-${number}`;
   address: string;
   city: string;
   country: string;
   zip: number;
+}
+
+export interface IMonitor extends Pick<IStudentModel, 'id' | 'name'> {
+  exams: number;
+  average: number;
 }

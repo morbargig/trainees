@@ -2,12 +2,11 @@ import { Component, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { IStudentElementModel } from '@softbar/api-interfaces';
 import { BaseCellComponent } from '@softbar/front/dynamic-table';
-import { StudentLocalStorageService } from '../../services/student.service';
-import { StudentFormComponent } from '../student-form/student-form.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { StudentFormComponent } from '../popups/student-form.component';
+import { StudentLocalStorageService } from '../../services/school/student.service';
 
 @Component({
   standalone: true,
@@ -47,10 +46,10 @@ import { Clipboard } from '@angular/cdk/clipboard';
   imports: [MatIconModule, MatMenuModule, MatButtonModule],
   encapsulation: ViewEncapsulation.None,
 })
-export class ClaimNumCellComponent extends BaseCellComponent<
-  IStudentElementModel,
-  'id'
-> {
+export class StudentActionCellComponent<
+  T extends { [key: string]: any },
+  K extends keyof T
+> extends BaseCellComponent<T, K> {
   constructor(
     private studentLocalStorageService: StudentLocalStorageService,
     cd: ChangeDetectorRef,
@@ -61,14 +60,18 @@ export class ClaimNumCellComponent extends BaseCellComponent<
   }
 
   onCopy() {
-    this.clipboard.copy(JSON.stringify(this.item));
+    this.studentLocalStorageService
+      .get('student', { params: { id: Number(this.value) } })
+      .subscribe((x) => {
+        this.clipboard.copy(JSON.stringify(x));
+      });
   }
   openPopUp(type: StudentFormComponent['data']['type']) {
     this.dialog.open<StudentFormComponent, StudentFormComponent['data']>(
       StudentFormComponent,
       {
         data: {
-          id: this.value,
+          id: Number(this.value),
           type,
         },
         width: '500px',
@@ -78,7 +81,7 @@ export class ClaimNumCellComponent extends BaseCellComponent<
   onDelete() {
     this.studentLocalStorageService.delete('student', {
       body: {
-        id: this.item.id,
+        id: Number(this.value),
       },
     });
   }

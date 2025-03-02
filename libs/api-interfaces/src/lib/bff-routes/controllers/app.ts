@@ -1,26 +1,17 @@
-import { IStudentElementModel } from '../../mocks';
+import { IExamModel, IStudentModel } from '../../mocks';
 import { controlType } from './controllers';
 
 export const BFF_APP_CONTROL_ROUTES = {
-  // students: {
-  //   method: 'get',
-  //   response: null as IStudentElementModel[],
-  // },
-  ...({} as
-    | {
-        student: {
-          method: 'get' | 'post' | 'put' | 'delete';
-          response: IStudentElementModel;
-        };
-      }
-    // | {
-    //     student: {
-    //       method: 'delete';
-    //       response: {
-    //         status: boolean;
-    //         method: 'delete';
-    //       };
-    //     };
-    //   }
-    ),
+  ...({} as {
+    exam: {
+      method: 'get' | 'post' | 'put';
+      response: IExamModel;
+    };
+  }),
+  ...({} as {
+    student: {
+      method: 'get' | 'post' | 'put';
+      response: IStudentModel;
+    };
+  }),
 } as const satisfies controlType;

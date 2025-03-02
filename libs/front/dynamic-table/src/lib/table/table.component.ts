@@ -53,7 +53,7 @@ export class TableComponent<
     return this.columns?.map((col) => col.id);
   }
 
-  trackByField(_: number, col:  ITableColumn<T>): string {
+  trackByField(_: number, col: ITableColumn<T>): string {
     return col.id;
   }
 
@@ -157,6 +157,9 @@ export class TableComponent<
   moreItems = (): void => {
     this.showAll = !this.showAll;
   };
+  @Input({ required: false }) trStyleFunc?: (
+    item?: T
+  ) => tableElStyleObj['styleClass'];
 
   // not-found cell
   @Input() notFoundColumn?: ITableColumn<T>;

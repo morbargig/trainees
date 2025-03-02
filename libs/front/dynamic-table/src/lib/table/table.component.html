@@ -84,7 +84,10 @@
     </ng-container>
     <tbody class="bg-white" [ngClass]="getElStyleClassString('tbody')">
       <tr
-        [ngClass]="getElStyleClassString('tr')"
+        [ngClass]="[
+          getElStyleClassString('tr',trStyleFunc!?.(row)),
+          'hover:bg-gray-100 active:bg-blue-200 active:text-blue-900'
+        ]"
         mat-row
         *matRowDef="let row; columns: displayedColumns"
       ></tr>
