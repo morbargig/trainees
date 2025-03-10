@@ -262,9 +262,6 @@ Jenkins
 Makefile
 README.md
 apps
-   |-- api
-   |   |-- Dockerfile
-   |   |-- Jenkins
    |-- main-app
    |   |-- Dockerfile
    |   |-- Jenkins
@@ -277,14 +274,9 @@ libs
    |   |-- ui-standalone-components
 nx.json
 package.json
-workspace.json
 ```
 
-# CI/CD
 
-![Diagram](https://github.com/morbargig/nx/blob/main/Jenkins/Jenkins.drawio.svg)
-
-[Edit CI/CD Diagram](https://app.diagrams.net/#Hmorbargig%2Fnx%2Fmain%2FJenkins%2FJenkins.drawio.svg)
 
 ---
 
