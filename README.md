@@ -1,136 +1,259 @@
-# Nx App
+# Senior Web Developer Task (BIKS)
 
-### infrastructures code for nx workspace and angular infrastructures libs and more
+## Project Overview
 
-- <app-name> refer to app or lib (app/lib names can be found in workspace.json)
+This project is a **Single Page Application (SPA)** that displays test results of trainees.
 
-## install
+### Requirements
 
-### to install all mono repo apps dependencies
+1. **State Preservation**: Filters and selections should persist when navigating between pages (without refreshing).
+2. **Functionality**: Filters, clicks, and other interactions must work properly.
+3. **Filter Behavior**:
+   - Empty filters should display all results.
+   - Filters are only active when a value is entered.
+4. **Bonus Points**:
+   - Using **Angular** is preferred.
+   - Adding **unit tests** (2-3 examples) will earn extra points.
+   - **Documentation** is highly appreciated.
+   - **UI/UX**: Any design framework is acceptable, but **Angular Material** is recommended.
 
-`npm i`
-
-#### if there are issues try with npm proxy
+## Application Layout (UI Sketch)
 
 ```
++----------------------------+
+|        Main Menu           |
+|----------------------------|
+| ▶ Data                     |
+| ▶ Analysis                 |
+| ▶ Monitor                  |
++----------------------------+
+|                            |
+|  +----------------------+  |
+|  |                      |  |
+|  |   Content Area       |  |
+|  |   (Page changes)     |  |
+|  |                      |  |
+|  +----------------------+  |
+|                            |
++----------------------------+
+```
+
+## Application Features
+
+### Data Page (UI Sketch)
+
+```
++--------------------------------------+
+|  Filter: [____________________] 🔍   |
++--------------------------------------+
+| ID   | Name     | Grade | Date       |
+|------|----------|-------|------------|
+| 101  | Alice    |  92   | 2024-03-10 |
+| 102  | Bob      |  85   | 2024-03-09 |
+| 103  | Charlie  |  78   | 2024-03-08 |
+| ...  | ...      | ...   | ...        |
++--------------------------------------+
+| [⬅ Prev]  Page 1/3  [Next ➡]        |
++--------------------------------------+
+```
+
+### Analysis Page (UI Sketch)
+
+```
++------------------------------------------------+
+| Select IDs: [101, 102, 103]                    |
+| Select Subjects: [Math, Science, History]      |
++------------------------------------------------+
+|          Performance Graph                     |
+|    +--------------------------+                |
+|  A |    *                     | Subject 1      |
+|  B |  *  *                    | Subject 2      |
+|  C |  *  *  *                 | Subject 3      |
+|    +--------------------------+                |
++------------------------------------------------+
+```
+
+### Monitor Page (UI Sketch)
+
+```
++-------------------------------------------+
+| Filter by Status: [✅ Passed] [❌ Failed]  |
++-------------------------------------------+
+|  Name     | Average  | Status             |
+|-----------|----------|--------------------|
+| Alice     |  88.5    | ✅ Passed          |
+| Bob       |  64.2    | ❌ Failed          |
+| Charlie   |  71.3    | ✅ Passed          |
++-------------------------------------------+
+```
+
+---
+
+# Nx App
+
+### Infrastructures code for Nx workspace and Angular infrastructure libs and more
+
+- `<app-name>` refers to an app or library (app/lib names can be found in `workspace.json`)
+
+## Install
+
+### Install all monorepo apps dependencies
+
+```sh
+npm i
+```
+
+#### If there are issues, try with npm proxy
+
+```sh
 npm config delete proxy
 npm config delete https-proxy
 ```
 
-### you can also try clean the project by
+### Clean the project
 
-#### cleanup the project folder from node_module etc.
+#### Cleanup the project folder from `node_modules`, etc.
 
-```
+```sh
 npm run clean
 ```
 
-#### cleanup npm cache.
+#### Cleanup npm cache
 
-```
+```sh
 npm run clean:npm
 ```
 
-## install VSC extensions
+## Install VSC Extensions
 
-1. open extensions tab
-2. type @recommended
-3. install all result
+1. Open the Extensions tab
+2. Type `@recommended`
+3. Install all results
 
 [VSC workspace recommended extensions docs](https://code.visualstudio.com/docs/editor/extension-marketplace#_extensions-view-filters)
 
-## run workspace in docker with VSC (docker desktop must be installed)
+## Run Workspace in Docker with VSC (Docker Desktop must be installed)
 
-1. after install all recommended extensions in last section [install VSC extensions](#install-vsc-extensions)
-2. <kbd>control</kbd> + <kbd>shift</kbd> + <kbd>p</kbd>
-3. start type `Dev Containers: Reopen in Container` and select (that it the folder will reopen in docker with access to it terminal)
-4. run any nx workspace command such as [nx workspace command](#nx-workspace-command)
+1. After installing all recommended extensions in the last section [Install VSC Extensions](#install-vsc-extensions)
+2. Press <kbd>Control</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>
+3. Start typing `Dev Containers: Reopen in Container` and select it (this will reopen the folder in Docker with terminal access)
+4. Run any Nx workspace command, such as [Nx workspace command](#nx-workspace-command)
 
 [Dev Containers Extension Docs](https://code.visualstudio.com/docs/devcontainers/containers)
 
-## Dev Example
+## Development Example
 
-Front - Main App
-`npx nx run main-app:serve`
+### Front - Main App
 
-BFF
-`npx nx run api:serve`
+```sh
+npx nx run main-app:serve
+```
 
-## nx workspace command
+### BFF
 
-[refer to nx command docs](https://nx.dev/reference/commands)
+```sh
+npx nx run api:serve
+```
 
-## serve
+## Nx Workspace Commands
 
-#### serve default app
+Refer to [Nx command docs](https://nx.dev/reference/commands)
 
-`npx nx serve`
+### Serve
 
-### serve app
+#### Serve default app
 
-`npx nx run <app-name>:serve`
+```sh
+npx nx serve
+```
 
-## test
+#### Serve specific app
 
-#### test default app
+```sh
+npx nx run <app-name>:serve
+```
 
-`npx nx test`
+### Test
 
-### test app
+#### Test default app
 
-`npx nx run <app-name>:test`
+```sh
+npx nx test
+```
 
-## test (\*watch)
+#### Test specific app
 
-`npx nx run <app-name>:test --watch`
+```sh
+npx nx run <app-name>:test
+```
 
-## lint
+#### Test in watch mode
 
-#### lint default app
+```sh
+npx nx run <app-name>:test --watch
+```
 
-`npx nx lint`
+### Lint
 
-### lint app
+#### Lint default app
 
-`npx nx run <app-name>:lint`
+```sh
+npx nx lint
+```
 
-## build
+#### Lint specific app
 
-#### build default app
+```sh
+npx nx run <app-name>:lint
+```
 
-`npx nx build`
+### Build
 
-#### build app
+#### Build default app
 
-`npx nx run <app-name>:build`
+```sh
+npx nx build
+```
 
-## storybook
+#### Build specific app
 
-#### serve the storybook of some app or lib if any
+```sh
+npx nx run <app-name>:build
+```
 
-`npx nx run <app-name>:storybook`
+### Storybook
 
-## build storybook
+#### Serve Storybook for an app or lib
 
-#### build the storybook of some app or lib if any
+```sh
+npx nx run <app-name>:storybook
+```
 
-`npx nx run <app-name>:build-storybook`
+#### Build Storybook for an app or lib
 
-## graph
+```sh
+npx nx run <app-name>:build-storybook
+```
 
-#### show project dependencies and explore them via ui
+### Graph
 
-`npx nx graph`
+#### Show project dependencies and explore them via UI
 
-## migrate
+```sh
+npx nx graph
+```
 
-#### update nx and all supported nx plugins and dependencies
+### Migrate
 
-`npx nx migrate latest`
+#### Update Nx and all supported Nx plugins and dependencies
 
-## Mono-Repo structure
+```sh
+npx nx migrate latest
+```
 
-### Project base tree
+## Monorepo Structure
+
+### Project Base Tree
 
 ```bash
 Jenkins
@@ -152,26 +275,18 @@ libs
    |   |-- dynamic-table
    |   |-- base-client
    |   |-- ui-standalone-components
-
-
 nx.json
 package.json
 workspace.json
 ```
 
-# CI-CD
+# CI/CD
 
 ![Diagram](https://github.com/morbargig/nx/blob/main/Jenkins/Jenkins.drawio.svg)
-<br>
-<a href="https://app.diagrams.net/#Hmorbargig%2Fnx%2Fmain%2FJenkins%2FJenkins.drawio.svg" target="_blank" >Edit</a>
 
-# softbar
+[Edit CI/CD Diagram](https://app.diagrams.net/#Hmorbargig%2Fnx%2Fmain%2FJenkins%2FJenkins.drawio.svg)
 
-This project was generated using [Nx](https://nx.dev).
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
-
-🔎 **Smart, Fast and Extensible Build System**
+---
 
 ## Quick Start & Documentation
 
@@ -181,85 +296,9 @@ This project was generated using [Nx](https://nx.dev).
 
 [Interactive Tutorial](https://nx.dev/tutorial/01-create-application)
 
-## Adding capabilities to your workspace
-
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
-
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
-
-Below are our core plugins:
-
-- [Angular](https://angular.io)
-  - `ng add @nx/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nx/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nx/node`
-
-There are also many [community plugins](https://nx.dev/community) you could add.
-
-## Generate an application
-
-Run `ng g @nx/angular:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `ng g @nx/angular:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@softbar/mylib`.
-
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
 ## ☁ Nx Cloud
 
-### Distributed Computation Caching & Distributed Task Execution
+Nx Cloud enables faster builds and tests by caching computations.
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
+[Learn More](https://nx.app/)
 
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
